@@ -1,6 +1,8 @@
-Back-end for victory gesture detection.
+**Back-end for victory gesture detection.**
 
 How to use:
+
+
 ```conda env create -f environment.yml```
 
 ```conda activate photo-capture```
