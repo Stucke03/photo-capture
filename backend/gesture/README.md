@@ -2,6 +2,7 @@ Back-end for victory gesture detection.
 
 How to use:
 ```conda env create -f environment.yml```
+
 ```conda activate photo-capture```
 
 In one terminal window, run `python detect_victory.py`. This is the backend that will be running when the app opens.
