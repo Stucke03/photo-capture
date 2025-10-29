@@ -9,7 +9,7 @@ struct ContentView: View {
     @State private var countdownValue = 5
     @State private var timer: Timer?
     @State private var showSaveAlert = false
-    @State private var albumName = "My Custom Album" // Default album name
+    @State private var albumName = "464 Lab Data" // Default album name, easier to change here than the UI
 
     var body: some View {
         ZStack {
@@ -138,7 +138,7 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
 
     func setup() {
         session.beginConfiguration()
-        guard let device = AVCaptureDevice.default(for: .video),
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
               let input = try? AVCaptureDeviceInput(device: device)
         else { return }
 
