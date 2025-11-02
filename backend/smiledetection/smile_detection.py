@@ -1,9 +1,20 @@
 from fastapi import FastAPI, UploadFile, File
 import numpy as np
 import cv2, uvicorn
+import mediapipe as mp
 
-face_haar = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-smile_haar = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_smile.xml')
+BaseOptions = mp.tasks.BaseOptions
+FaceLandmarker = mp.tasks.vision.FaceLandmarker
+landmarkerOptions = mp.tasks.vision.FaceLandmarkerOptions
+runningMode = mp.tasks.vision.RunningMode
+
+model_path = "face_landmarker.task"
+options = landmarkerOptions(base_options=BaseOptions(model_asset_path=model_path),
+    running_mode=runningMode.LIVE_STREAM,
+    output_face_blendshapes=True)
+landmarker = FaceLandmarker.create_from_options(options)
+
+app = FastAPI()
 
 @app.post("/detect_smile")
 async def detect_smile(file: UploadFile = File(...)):
@@ -12,21 +23,15 @@ async def detect_smile(file: UploadFile = File(...)):
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     if frame is None:
         return {"error": "Could not decode the image."}
-
-    grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_haar.detectMultiScale(grayscale, scaleFactor=1.3, minNeighbors=5)
+    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+    result = landmarker.detect(mp_image)
     
-    smile_detected = False
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        smile_region = grayscale[y:y + h, x:x + w]
-        smile = smile_haar.detectMultiScale(smile_region, scaleFactor=1.9, minNeighbors=30, minSize=(80, 80))
-        if len(smile) > 0:
-            smile_detected = True
-            break
-        #for (sx, sy, sw, sh) in smile:
-            #cv2.rectangle(frame, (x + sx, y + sy), (x + sx + sw, y + sy + sh), (0, 255, 0), 2)
-        #cv2.imshow('Smile Detection', frame)
-    return {"smile_detected": smile_detected}
+    smile_score = 0.0
+    if result.output_face_blendshapes:
+        for b in result.face_blendshapes[0]:
+            if "mouthSmile" in b.category_name:
+                smile_score += b.value
+        smile_score /= 2.0 
+    return {"smile_detected": smile_score > 0.5}
 
 if __name__=="__main__": uvicorn.run(app,host="0.0.0.0",port=8000)
