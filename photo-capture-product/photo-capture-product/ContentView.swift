@@ -6,6 +6,7 @@ import Combine
 struct ContentView: View {
     @StateObject private var camera = CameraModel()
     @StateObject private var gesture = GestureDetector()
+    @StateObject private var smile = SmileDetector()
     @State private var showCountdown = false
     @State private var countdownValue = 5
     @State private var timer: Timer?
@@ -87,15 +88,29 @@ struct ContentView: View {
                 gesture.enabled.toggle()
                 showDashboard = false
             }
+            Button(smile.enabled ? "Stop Smile Photo" : "Smile Photo") {
+                smile.enabled.toggle()
+                showDashboard = false
+            }
             Button("Cancel", role: .cancel) { }
         }
         .onAppear {
             camera.checkPermissions()
             camera.forwardSampleBuffer = { buffer in
-                gesture.process(sampleBuffer: buffer)
+                if gesture.enabled {
+                    gesture.process(sampleBuffer: buffer)
+                }
+                if smile.enabled {
+                    smile.process(sampleBuffer: buffer)
+                }
             }
         }
         .onReceive(gesture.gestureFire) { _ in
+            if !showCountdown {
+                startCountdown()
+            }
+        }
+        .onReceive(smile.smileFire) { _ in
             if !showCountdown {
                 startCountdown()
             }
