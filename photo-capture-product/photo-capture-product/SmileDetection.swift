@@ -40,10 +40,11 @@ final class SmileDetector: ObservableObject {
                 let upper = mouthPoints[mouthPoints.count/3]
                 let lower = mouthPoints[2 * mouthPoints.count/3]
 
-                let width = rightCorner.x - leftCorner.x
-                let height = lower.y - upper.y
+                let width = abs(rightCorner.x - leftCorner.x)
+                let height = abs(lower.y - upper.y)
+                let mouthAspectRatio = height / width
 
-                if width > 0.2 && height > 0.1 {
+                if mouthAspectRation > 1.5 {
                     detected = true
                     break
                 }
