@@ -44,7 +44,7 @@ final class SmileDetector: ObservableObject {
                 let height = abs(lower.y - upper.y)
                 let mouthAspectRatio = height / width
 
-                if mouthAspectRation > 1.5 {
+                if mouthAspectRatio > 1.5 {
                     detected = true
                     break
                 }
