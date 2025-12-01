@@ -2,7 +2,7 @@
 
 We are investigating the performance of hands-free photo interaction methods and how they compare to each other in terms of reliability, usability and workload. Currently, most camera applications only provide the option to use a timer setting for hands-free photo capture on mobile devices. However, this setting has been commonly dubbed as unreliable and unusable by many, often due to the challenge of being ready for the capture at the exact time when the countdown goes to 0. There are other hands-free photo interaction methods that have been researched and engineered, such as gesture detection and remote capture. However, there is a lack of comparative study of these methods on a single application. In this project, we aim to study four methods in tandem and quantitatively measure reliability, usability and workload perceived by users when using these methods. 
 
-This is the codebase for the application we use for our experiments.
+This is the codebase for the iOS application we use for our experiments.
 
 
 # Instructions
